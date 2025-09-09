@@ -249,3 +249,26 @@
     unlock-height: uint
   }
 )
+
+;; Oracle Access Control
+(define-map authorized-oracles
+  { address: principal }
+  { 
+    is-active: bool,
+    asset-types: (list 10 uint)
+  }
+)
+
+;; Add or update an oracle
+(define-public (set-oracle (oracle-address principal) (is-active bool) (asset-types (list 10 uint)))
+  (begin
+    (asserts! (is-eq tx-sender (var-get governance-address)) ERR-NOT-AUTHORIZED)
+    (ok (map-set authorized-oracles
+      { address: oracle-address }
+      { 
+        is-active: is-active,
+        asset-types: asset-types
+      }
+    ))
+  )
+)
